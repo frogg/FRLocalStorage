@@ -44,11 +44,13 @@ static NSString *filePath;
     for(NSString *key in dictionary) {
         
         NSString *object = [dictionary objectForKey:key];
-        NSData *nsdata = [object dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *base64Object = [nsdata base64EncodedStringWithOptions:0];
+        NSString *base64Object = [self stringToBase64String:object];
+        
+        NSString *base64Key = [self stringToBase64String:key];
         
         
-        saveDataString = [NSString stringWithFormat:@"%@%@==^==^==%@\n",saveDataString,key,base64Object];
+        saveDataString = [NSString stringWithFormat:@"%@%@==^==^==%@\n",saveDataString,base64Key,base64Object];
+    
     }
     [saveDataString writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 }
@@ -60,14 +62,29 @@ static NSString *filePath;
     for(NSString *keyValuePair in [loadDataString componentsSeparatedByString:@"\n"]) {
         
         if([[keyValuePair componentsSeparatedByString:@"==^==^=="] count]>1) {
-            NSString *key = [[keyValuePair componentsSeparatedByString:@"==^==^=="] objectAtIndex:0];
+            NSString *base64Key = [[keyValuePair componentsSeparatedByString:@"==^==^=="] objectAtIndex:0];
+            
+            NSString *key = [self base64StringToString:base64Key];
+            
             NSString *base64Object = [[keyValuePair componentsSeparatedByString:@"==^==^=="] objectAtIndex:1];
-            NSData *nsdataFromBase64String = [[NSData alloc] initWithBase64EncodedString:base64Object options:0];
-            NSString *object = [[NSString alloc] initWithData:nsdataFromBase64String encoding:NSUTF8StringEncoding];
+
+            NSString *object = [self base64StringToString:base64Object];
             
             [dictionary setObject:object forKey:key];
         }
     }
+}
+
++(NSString *) stringToBase64String:(NSString *) string {
+    NSData *nsdata = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *base64String = [nsdata base64EncodedStringWithOptions:0];
+    return base64String;
+}
+
++(NSString *) base64StringToString:(NSString *) base64String {
+    NSData *nsdataFromBase64String = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+    NSString *string = [[NSString alloc] initWithData:nsdataFromBase64String encoding:NSUTF8StringEncoding];
+    return string;
 }
 
 
