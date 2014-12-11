@@ -11,6 +11,7 @@
 @implementation FRLocalStorage
 static NSMutableDictionary *dictionary;
 static NSString *filePath;
+static NSString *splitter = @"[==^==^==]";
 
 #pragma mark public methods
 +(void) initializeStorage {
@@ -49,7 +50,7 @@ static NSString *filePath;
         NSString *base64Key = [self stringToBase64String:key];
         
         
-        saveDataString = [NSString stringWithFormat:@"%@%@==^==^==%@\n",saveDataString,base64Key,base64Object];
+        saveDataString = [NSString stringWithFormat:@"%@%@%@%@\n",saveDataString,base64Key,splitter,base64Object];
     
     }
     [saveDataString writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -61,12 +62,12 @@ static NSString *filePath;
 
     for(NSString *keyValuePair in [loadDataString componentsSeparatedByString:@"\n"]) {
         
-        if([[keyValuePair componentsSeparatedByString:@"==^==^=="] count]>1) {
-            NSString *base64Key = [[keyValuePair componentsSeparatedByString:@"==^==^=="] objectAtIndex:0];
+        if([[keyValuePair componentsSeparatedByString:splitter] count]>1) {
+            NSString *base64Key = [[keyValuePair componentsSeparatedByString:splitter] objectAtIndex:0];
             
             NSString *key = [self base64StringToString:base64Key];
             
-            NSString *base64Object = [[keyValuePair componentsSeparatedByString:@"==^==^=="] objectAtIndex:1];
+            NSString *base64Object = [[keyValuePair componentsSeparatedByString:splitter] objectAtIndex:1];
 
             NSString *object = [self base64StringToString:base64Object];
             
