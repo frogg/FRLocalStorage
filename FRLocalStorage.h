@@ -12,7 +12,9 @@
 
 +(void) initializeStorage;
 +(NSString *) objectForKey:(NSString *) key;
++(BOOL) keyExists:(NSString *) key;
 +(void) storeObject:(NSString *) object forKey:(NSString *) key;
+
 
 
 @end

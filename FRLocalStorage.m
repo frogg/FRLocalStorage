@@ -33,6 +33,10 @@ static NSString *filePath;
     [FRLocalStorage saveDictionaryToDisc];
 }
 
++(BOOL) keyExists:(NSString *)key {
+    return [FRLocalStorage objectForKey:key];
+}
+
 #pragma mark
 #pragma mark private methods
 +(void) saveDictionaryToDisc {
